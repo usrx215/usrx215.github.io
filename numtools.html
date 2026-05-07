@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="darkreader-lock">
+<title>NumTools</title>
+<link rel="icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/71400477?v=4">
+<script src="https://kit.fontawesome.com/180b94fa4b.js" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Ubuntu", Arial, sans-serif;
+  background: linear-gradient(135deg, #20b2aa, #32cd32);
+  background-size: 200% 200%;
+  animation: gradientMove 5s infinite alternate;
+  min-height: 100vh;
+  color: white;
+}
+
+@keyframes gradientMove {
+  from { background-position: left top; }
+  to   { background-position: right bottom; }
+}
+
+a { text-decoration: none; color: black; }
+a:hover { color: black; }
+i { color: black; }
+
+/* ── Header ── */
+header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  height: 50px;
+}
+
+#menu { color: white; }
+#menu button {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.dropdown {
+  display: none;
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 8px;
+  z-index: 100;
+  top: 44px;
+  left: 10px;
+  white-space: nowrap;
+}
+#menu:hover .dropdown { display: block; }
+
+#time {
+  margin-left: auto;
+  font-weight: bold;
+  font-family: "Ubuntu Mono", monospace;
+  color: white;
+}
+
+/* ── Title ── */
+.title-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 32px 0 24px;
+}
+
+h1 {
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 2.5em;
+  text-align: center;
+  background: rgba(255,255,255,0.8);
+  color: #222;
+  padding: 14px 28px;
+  border-radius: 15px;
+  margin: 0;
+  display: inline-block;
+}
+
+/* ── Bento Grid ── */
+.bento {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 18px;
+  max-width: 900px;
+  margin: 0 auto 40px;
+  padding: 0 18px;
+}
+
+/* Random Number Generator — top-left, taller */
+.card-rng   { grid-column: 1; grid-row: 1 / 3; }
+/* Prime Checker — top-right */
+.card-prime { grid-column: 2; grid-row: 1; }
+/* Root Calculator — bottom-right */
+.card-root  { grid-column: 2; grid-row: 2; }
+/* Pythagorean Theorem — full width at bottom */
+.card-pyth  { grid-column: 1 / 3; grid-row: 3; }
+
+.card {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 18px;
+  padding: 22px 26px;
+  font-family: "Ubuntu", Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.card h2 {
+  font-family: "Ubuntu Mono", monospace;
+  margin: 0 0 14px;
+  font-size: 1.15em;
+  border-bottom: 1px solid rgba(255,255,255,0.35);
+  padding-bottom: 8px;
+  color: white;
+}
+.card h2 i { color: white; margin-right: 6px; }
+
+.card p { margin: 10px 0 4px; color: rgba(255,255,255,0.9); font-size: 0.92em; }
+
+/* ── Inputs ── */
+input[type="number"],
+input[type="text"],
+textarea {
+  background: rgba(255,255,255,0.22);
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 8px;
+  color: white;
+  padding: 8px 10px;
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 1em;
+  outline: none;
+  width: 100%;
+}
+
+input[type="number"]::placeholder,
+input[type="text"]::placeholder,
+textarea::placeholder { color: rgba(255,255,255,0.55); }
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+textarea:focus {
+  border-color: white;
+  background: rgba(255,255,255,0.32);
+}
+
+textarea { resize: vertical; }
+
+.range-row { display: flex; gap: 10px; }
+.range-row input { flex: 1; }
+
+.radio-group label,
+.check-label { margin-right: 16px; cursor: pointer; font-size: 0.92em; }
+
+/* ── Root input row ── */
+.root-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.root-row input { flex: 1; }
+.root-label {
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 1.4em;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 8px;
+  padding: 6px 12px;
+  white-space: nowrap;
+  min-width: 56px;
+  text-align: center;
+  transition: background 0.2s;
+}
+
+/* ── Pythagorean row ── */
+.pyth-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.pyth-row .field { flex: 1; }
+.pyth-row .field label { font-size: 0.88em; color: rgba(255,255,255,0.8); display: block; margin-bottom: 4px; }
+
+/* ── Buttons ── */
+button.action {
+  margin-top: 14px;
+  padding: 9px 20px;
+  background: rgba(70,70,70,0.82);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95em;
+  font-family: "Ubuntu", Arial, sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+  align-self: flex-start;
+}
+button.action:hover { background: rgba(30,30,30,0.95); }
+button.action i { color: white; margin-right: 5px; }
+
+/* ── Result displays ── */
+.result-box {
+  margin-top: 10px;
+  font-size: 1.05em;
+  font-weight: bold;
+  background: rgba(255,255,255,0.18);
+  border-radius: 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,0.35);
+  color: white;
+  font-family: "Ubuntu Mono", monospace;
+  min-height: 2em;
+  word-break: break-all;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .bento {
+    grid-template-columns: 1fr;
+  }
+  .card-rng, .card-prime, .card-root, .card-pyth {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .pyth-row { flex-direction: column; }
+  .pyth-row .field { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div id="menu">
+    <button><i class="fa-solid fa-link"></i><i class="fa-solid fa-bars"></i></button>
+    <div class="dropdown">
+      <a href="https://sc-games.w3spaces.com" target="_blank"><i class="fa-solid fa-gamepad"></i> SC Games</a><br>
+      <a href="https://x-openarcade.github.io/" target="_blank"><i class="fa-solid fa-gamepad"></i> Xander's OpenArcade (SCG predecessor)</a><br>
+      <a href="https://github.com/usrx215" target="_blank"><i class="fa-brands fa-square-github"></i> usrx215's GitHub</a><br>
+      <a href="numtools.html" target="_blank"><i class="fa-solid fa-hashtag"></i> NumTools</a><br>
+      <a href="gallery"><i class="fa-solid fa-images"></i> Image Gallery</a>
+    </div>
+  </div>
+  <div id="time"></div>
+</header>
+
+<div class="title-wrap">
+  <h1>NumTools</h1>
+</div>
+
+<div class="bento">
+
+  <!-- ── Random Number Generator ── -->
+  <div class="card card-rng">
+    <h2><i class="fa-solid fa-dice"></i> Random Number Generator</h2>
+
+    <p>Range:</p>
+    <div class="range-row">
+      <input type="number" id="lower" placeholder="Lower bound">
+      <input type="number" id="upper" placeholder="Upper bound">
+    </div>
+
+    <p>Decimal:</p>
+    <span class="check-label">
+      <input type="checkbox" id="decimal">
+      <label for="decimal">Allow decimal numbers</label>
+    </span>
+
+    <p>Parity:</p>
+    <span class="radio-group">
+      <input type="radio" id="both" name="parity" value="both" checked>
+      <label for="both">Both</label>
+      <input type="radio" id="even" name="parity" value="even">
+      <label for="even">Even only</label>
+      <input type="radio" id="odd" name="parity" value="odd">
+      <label for="odd">Odd only</label>
+    </span>
+
+    <p>Choose from specific numbers <span style="opacity:0.65">(comma-separated, optional)</span>:</p>
+    <textarea id="numbers" rows="3" placeholder="e.g. 3, 7, 42, 100"></textarea>
+
+    <button class="action" onclick="random_number_generator()">
+      <i class="fa-solid fa-shuffle"></i> Generate
+    </button>
+
+    <p>Result:</p>
+    <div class="result-box" id="rng-output">—</div>
+  </div>
+
+  <!-- ── Prime Checker ── -->
+  <div class="card card-prime">
+    <h2><i class="fa-solid fa-circle-xmark"></i> Prime Checker</h2>
+
+    <p>Enter a number:</p>
+    <input type="number" id="prime-input" placeholder="e.g. 97">
+
+    <button class="action" onclick="checkPrime()">
+      <i class="fa-solid fa-magnifying-glass"></i> Check
+    </button>
+
+    <div class="result-box" id="prime-result" style="margin-top:12px">—</div>
+  </div>
+
+  <!-- ── Root Calculator ── -->
+  <div class="card card-root">
+    <h2><i class="fa-solid fa-square-root-variable"></i> Root Calculator</h2>
+
+    <p>Root degree <span style="opacity:0.65">(e.g. 2 = √, 3 = ∛)</span>:</p>
+    <input type="number" id="root-degree" value="2" min="1" step="1"
+           oninput="updateRootLabel()">
+
+    <p>Number:</p>
+    <div class="root-row">
+      <span class="root-label" id="root-label">√</span>
+      <input type="number" id="root-input" placeholder="e.g. 64">
+    </div>
+
+    <button class="action" onclick="calcRoot()">
+      <i class="fa-solid fa-calculator"></i> Calculate
+    </button>
+
+    <div class="result-box" id="root-result" style="margin-top:12px">—</div>
+  </div>
+
+  <!-- ── Pythagorean Theorem ── -->
+  <div class="card card-pyth">
+    <h2><i class="fa-solid fa-draw-polygon"></i> Pythagorean Theorem</h2>
+    <p style="margin-bottom:12px">Fill in any two values — the third will be calculated. <span style="opacity:0.65">(a² + b² = c²)</span></p>
+
+    <div class="pyth-row">
+      <div class="field">
+        <label for="pyth-a">a &nbsp;<span style="opacity:0.6">(leg)</span></label>
+        <input type="number" id="pyth-a" placeholder="Side a">
+      </div>
+      <div class="field">
+        <label for="pyth-b">b &nbsp;<span style="opacity:0.6">(leg)</span></label>
+        <input type="number" id="pyth-b" placeholder="Side b">
+      </div>
+      <div class="field">
+        <label for="pyth-c">c &nbsp;<span style="opacity:0.6">(hypotenuse)</span></label>
+        <input type="number" id="pyth-c" placeholder="Side c">
+      </div>
+    </div>
+
+    <button class="action" onclick="calcPyth()">
+      <i class="fa-solid fa-calculator"></i> Calculate
+    </button>
+
+    <div class="result-box" id="pyth-result" style="margin-top:12px">—</div>
+  </div>
+
+</div><!-- /bento -->
+
+<script>
+/* ── Clock ── */
+function updateTime() {
+  const n = new Date();
+  document.getElementById('time').textContent =
+    n.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+/* ── Random Number Generator ── */
+function random_number_generator() {
+  const lower   = parseInt(document.getElementById("lower").value) || 0;
+  const upper   = parseInt(document.getElementById("upper").value) || 100;
+  const decimal = document.getElementById("decimal").checked;
+  const parity  = document.querySelector('input[name="parity"]:checked').value;
+  const raw     = document.getElementById("numbers").value.trim();
+  let number;
+
+  if (raw !== "") {
+    const nums = raw.split(",").map(s => s.trim()).filter(s => s !== "");
+    number = nums[Math.floor(Math.random() * nums.length)];
+  } else {
+    if (decimal) {
+      number = Math.random() * (upper - lower) + lower;
+    } else {
+      number = Math.floor(Math.random() * (upper - lower + 1)) + lower;
+    }
+    if (parity === "even") number = number - number % 2;
+    else if (parity === "odd") number = number + (number % 2 === 0 ? 1 : 0);
+  }
+
+  document.getElementById("rng-output").textContent = number;
+}
+
+/* ── Prime Checker ── */
+function is_prime(num) {
+  if (num < 2) return false;
+  for (let i = 2; i <= Math.sqrt(num); i++) {
+    if (num % i === 0) return false;
+  }
+  return true;
+}
+
+function checkPrime() {
+  const number = parseInt(document.getElementById("prime-input").value);
+  const box = document.getElementById("prime-result");
+  if (isNaN(number)) {
+    box.textContent = "Please enter a valid number.";
+  } else {
+    box.textContent = is_prime(number)
+      ? number + " is a prime number. ✓"
+      : number + " is not a prime number. ✗";
+  }
+}
+
+/* ── Root Calculator ── */
+const rootSymbols = { 2: "√", 3: "∛", 4: "∜" };
+
+function updateRootLabel() {
+  const n = parseInt(document.getElementById("root-degree").value) || 2;
+  const label = document.getElementById("root-label");
+  label.textContent = rootSymbols[n] || n + "√";
+}
+
+function calcRoot() {
+  const n      = parseFloat(document.getElementById("root-input").value);
+  const degree = parseInt(document.getElementById("root-degree").value) || 2;
+  const box    = document.getElementById("root-result");
+  const sym    = rootSymbols[degree] || degree + "√";
+
+  if (isNaN(n)) { box.textContent = "Please enter a number."; return; }
+  if (degree < 1) { box.textContent = "Degree must be ≥ 1."; return; }
+
+  // Handle negative numbers for odd roots
+  let result;
+  if (n < 0 && degree % 2 !== 0) {
+    result = -Math.pow(-n, 1 / degree);
+  } else if (n < 0) {
+    box.textContent = "Cannot take an even root of a negative number.";
+    return;
+  } else {
+    result = Math.pow(n, 1 / degree);
+  }
+
+  box.textContent = sym + n + " = " + result;
+}
+
+/* ── Pythagorean Theorem ── */
+function calcPyth() {
+  const a   = parseFloat(document.getElementById("pyth-a").value);
+  const b   = parseFloat(document.getElementById("pyth-b").value);
+  const c   = parseFloat(document.getElementById("pyth-c").value);
+  const box = document.getElementById("pyth-result");
+
+  const known = [!isNaN(a), !isNaN(b), !isNaN(c)].filter(Boolean).length;
+  if (known !== 2) { box.textContent = "Enter exactly two sides."; return; }
+
+  if (!isNaN(a) && !isNaN(b)) {
+    box.textContent = "c (hypotenuse) = " + Math.sqrt(a*a + b*b);
+  } else if (!isNaN(a) && !isNaN(c)) {
+    if (c <= a) { box.textContent = "Error: hypotenuse must be larger than side a."; return; }
+    box.textContent = "b (leg) = " + Math.sqrt(c*c - a*a);
+  } else if (!isNaN(b) && !isNaN(c)) {
+    if (c <= b) { box.textContent = "Error: hypotenuse must be larger than side b."; return; }
+    box.textContent = "a (leg) = " + Math.sqrt(c*c - b*b);
+  }
+}
+</script>
+</body>
+</html>

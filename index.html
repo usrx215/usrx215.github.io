@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="darkreader-lock">
+<title>Welcome to usrx.space</title>
+<script src="https://kit.fontawesome.com/180b94fa4b.js" crossorigin="anonymous"></script>
+<link rel="icon" type="image/png" href="hexcntr-256.png">
+<meta property="og:title" content="usrx.space" />
+<meta property="og:description" content="usrx.space, website of usrx215" />
+<meta property="og:image" content="hexcntr-512.png" />
+<meta property="og:url" content="https://usrx.space" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="usrx.space" />
+<meta name="twitter:description" content="usrx.space, website of usrx215" />
+<meta name="twitter:image" content="hexcntr-512.png" />
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #20b2aa, #32cd32);
+  background-size: 200% 200%;
+  animation: gradientMove 5s infinite alternate;
+}
+
+header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  height: 50px;
+}
+a { text-decoration: none; color: black; }
+a:hover { color: black; }
+i { color: black; }
+
+#menu { color: white; }
+#menu button {
+  background: none; border: none;
+  font-size: 1.2em; cursor: pointer; font-weight: bold;
+}
+.dropdown {
+  display: none; position: absolute;
+  background: white; border: 1px solid #ccc;
+  padding: 10px; border-radius: 8px;
+}
+#menu:hover .dropdown { display: block; }
+#time { margin-left: auto; font-weight: bold; }
+
+.main {
+  height: calc(100vh - 50px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+h1 {
+  font-size: 4em;
+  background: rgba(255,255,255,0.8);
+  padding: 20px; border-radius: 15px;
+}
+.hex-container {
+  margin-top: 120px;
+  animation: bounce 2s infinite ease-in-out;
+}
+@keyframes gradientMove {
+  from { background-position: left top; }
+  to   { background-position: right bottom; }
+}
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-50px); }
+}
+
+/* ── Pong overlay ─────────────────────────────────────────────────── */
+#pong-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.82);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#pong-overlay.active { display: flex; }
+
+#pong-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#pong-label {
+  color: #20b2aa;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85em;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+#pong-score {
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  font-size: 2.2em;
+  font-weight: bold;
+  letter-spacing: 12px;
+}
+
+#pong-canvas {
+  border: 3px solid rgba(32,178,170,0.6);
+  border-radius: 4px;
+  box-shadow:
+    0 0 30px rgba(32,178,170,0.35),
+    0 0 80px rgba(50,205,50,0.15);
+  display: block;
+  background: #0a0a0a;
+}
+
+#pong-controls {
+  color: rgba(255,255,255,0.4);
+  font-family: 'Courier New', monospace;
+  font-size: 0.72em;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+#pong-win-msg {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: rgba(0,0,0,0.75);
+  border-radius: 4px;
+  gap: 14px;
+}
+#pong-win-msg.show { display: flex; }
+
+#pong-win-text {
+  color: #32cd32;
+  font-family: 'Courier New', monospace;
+  font-size: 2em;
+  font-weight: bold;
+  letter-spacing: 4px;
+  text-align: center;
+  text-shadow: 0 0 20px #32cd32;
+}
+#pong-win-sub {
+  color: rgba(255,255,255,0.5);
+  font-family: 'Courier New', monospace;
+  font-size: 0.8em;
+  letter-spacing: 2px;
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div id="menu">
+    <button><i class="fa-solid fa-link"></i><i class="fa-solid fa-bars"></i></button>
+    <div class="dropdown">
+      <a href="https://arcadia.usrx.space" target="_blank"><i class="fa-solid fa-gamepad"></i> Arcadia</a><br>
+      <a href="https://github.com/usrx215" target="_blank"><i class="fa-brands fa-square-github"></i> usrx215's GitHub</a><br>
+      <a href="https://steamcommunity.com/id/usrx215/" target="_blank"><i class="fa-brands fa-steam"></i> usrx215's Steam</a><br>
+      <a href="https://discord.com/users/821127583017992215" target="_blank"><i class="fa-brands fa-discord"></i> usrx215's Discord</a><br>
+      <a href="https://youtube.com/@usrx215" target="_blank"><i class="fa-brands fa-youtube"></i> usrx215's YouTube</a><br>
+      <a href="https://twitch.tv/usrx215" target="_blank"><i class="fa-brands fa-twitch"></i> usrx215's Twitch</a><br>
+      <a href="numtools.html" target="_blank"><i class="fa-solid fa-hashtag"></i> NumTools</a><br>
+      <a href="images/"><i class="fa-solid fa-images"></i> Image Gallery</a>
+    </div>
+  </div>
+  <div id="time"></div>
+</header>
+
+<div class="main">
+  <h1>Welcome to usrx.space!</h1>
+  <div class="hex-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="5 4.14 190 221.72" width="152px" height="173.52px" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0" stop-color="#20b2aa"/>
+          <stop offset="0.5" stop-color="#32cd32"/>
+          <stop offset="1" stop-color="#ffc200"/>
+        </linearGradient>
+        <clipPath id="tongueClip" clipPathUnits="userSpaceOnUse">
+          <rect x="-500" y="130" width="1000" height="200"/>
+        </clipPath>
+      </defs>
+      <polygon points="100,10 190,65 190,165 100,220 10,165 10,65"
+               fill="url(#hexGrad)" stroke="#000" stroke-width="10" vector-effect="non-scaling-stroke"/>
+      <circle cx="75" cy="80" r="10" fill="#000"/>
+      <circle id="leftPupil" cx="78" cy="77" r="3" fill="#fff"/>
+      <circle cx="125" cy="95" r="10" fill="#000"/>
+      <circle id="rightPupil" cx="128" cy="92" r="3" fill="#fff"/>
+      <line x1="80" y1="125" x2="130" y2="135" stroke="#000" stroke-width="6" stroke-linecap="round"/>
+      <g id="tongue-group" clip-path="url(#tongueClip)">
+        <path d="M128.877 136.959 L115.624 134.106 L110.808 150.416 
+                 C110.665 153.252 110.396 156.58 117.14 157.83 
+                 C122.891 158.896 125.648 154.124 126.192 151.724 
+                 L128.877 136.959 Z"
+              fill="#ff5c8a" stroke="#000" stroke-width="2"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<!-- ── Pong overlay ─────────────────────────────────────────────────── -->
+<div id="pong-overlay">
+  <div id="pong-wrapper">
+    <div id="pong-label">⬆⬆⬇⬇⬅➡⬅➡ B A — PONG UNLOCKED</div>
+    <div id="pong-score">0 &nbsp; 0</div>
+    <div style="position:relative;">
+      <canvas id="pong-canvas" width="700" height="450"></canvas>
+      <div id="pong-win-msg">
+        <div id="pong-win-text"></div>
+        <div id="pong-win-sub">closing in 3…</div>
+      </div>
+    </div>
+    <div id="pong-controls">YOU (left): W / S &nbsp;|&nbsp; first to 11 wins</div>
+  </div>
+</div>
+
+<!-- ── Scripts ──────────────────────────────────────────────────────── -->
+<script>
+/* ---------- Clock ---------- */
+function updateTime() {
+  const n = new Date();
+  document.getElementById('time').textContent =
+    n.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+const h = new Date().getHours();
+document.querySelector('h1').textContent =
+  h < 12 ? "Good morning from usrx.space!"
+: h < 18 ? "Good afternoon from usrx.space!"
+         : "Good evening from usrx.space!";
+</script>
+
+<script>
+/* ---------- Hex eye / tongue animation (original) ---------- */
+const leftPupil   = document.getElementById('leftPupil');
+const rightPupil  = document.getElementById('rightPupil');
+const tongueGroup = document.getElementById('tongue-group');
+const leftEyeCenter  = { x: 75,  y: 80 };
+const rightEyeCenter = { x: 125, y: 95 };
+const eyeRadius = 3;
+
+let isAnimating = false, lickTimer = null, currentTongueX = 0, rafId = null;
+
+function setTongueX(x) {
+  currentTongueX = x;
+  tongueGroup.setAttribute('transform', `translate(${x}, 0)`);
+}
+function easeInQuad(t)  { return t * t; }
+function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+function animateTongue(from, to, duration, easingFn, onDone) {
+  if (rafId) cancelAnimationFrame(rafId);
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / duration, 1);
+    setTongueX(from + (to - from) * easingFn(t));
+    if (t < 1) { rafId = requestAnimationFrame(step); }
+    else { rafId = null; if (onDone) onDone(); }
+  }
+  rafId = requestAnimationFrame(step);
+}
+
+function triggerLick() {
+  isAnimating = true;
+  leftPupil.setAttribute('cx',  leftEyeCenter.x);
+  leftPupil.setAttribute('cy',  leftEyeCenter.y);
+  rightPupil.setAttribute('cx', rightEyeCenter.x);
+  rightPupil.setAttribute('cy', rightEyeCenter.y);
+  animateTongue(0, -60, 300, easeInQuad, () => {
+    animateTongue(-60, 0, 2000, easeOutCubic, () => {
+      isAnimating = false;
+      scheduleLick();
+    });
+  });
+}
+
+function scheduleLick() {
+  if (lickTimer) clearTimeout(lickTimer);
+  const delay = 120_000 + Math.random() * 10_000;
+  lickTimer = setTimeout(triggerLick, delay);
+}
+scheduleLick();
+
+document.addEventListener('mousemove', e => {
+  if (isAnimating) return;
+  const rect = document.querySelector('.hex-container svg').getBoundingClientRect();
+  const svgW = rect.width, svgH = rect.height;
+  const vbW = 190, vbH = 221.72, vbX = 5, vbY = 4.14;
+  const mouseX = (e.clientX - rect.left)  * (vbW / svgW) + vbX;
+  const mouseY = (e.clientY - rect.top)   * (vbH / svgH) + vbY;
+  function movePupil(el, center) {
+    const dx = mouseX - center.x, dy = mouseY - center.y;
+    const angle = Math.atan2(dy, dx);
+    el.setAttribute('cx', center.x + Math.cos(angle) * eyeRadius);
+    el.setAttribute('cy', center.y + Math.sin(angle) * eyeRadius);
+  }
+  movePupil(leftPupil,  leftEyeCenter);
+  movePupil(rightPupil, rightEyeCenter);
+});
+</script>
+
+<script>
+/* ================================================================
+   KONAMI CODE → PONG
+   ================================================================ */
+const KONAMI = [
+  'ArrowUp','ArrowUp','ArrowDown','ArrowDown',
+  'ArrowLeft','ArrowRight','ArrowLeft','ArrowRight',
+  'b','a'
+];
+let konamiIdx = 0;
+
+document.addEventListener('keydown', e => {
+  const expected = KONAMI[konamiIdx];
+  if (e.key === expected) {
+    konamiIdx++;
+    if (konamiIdx === KONAMI.length) {
+      konamiIdx = 0;
+      launchPong();
+    }
+  } else {
+    // allow re-try from start (or position 1 if first key matches restart)
+    konamiIdx = (e.key === KONAMI[0]) ? 1 : 0;
+  }
+});
+
+/* ── Pong engine ─────────────────────────────────────────────────── */
+const overlay   = document.getElementById('pong-overlay');
+const canvas    = document.getElementById('pong-canvas');
+const scoreEl   = document.getElementById('pong-score');
+const winMsg    = document.getElementById('pong-win-msg');
+const winText   = document.getElementById('pong-win-text');
+const winSub    = document.getElementById('pong-win-sub');
+const ctx       = canvas.getContext('2d');
+
+const W = canvas.width, H = canvas.height;
+const PADDLE_W = 12, PADDLE_H = 80, BALL_R = 8;
+const PADDLE_SPEED = 4;
+const AI_SPEED = 3.2;
+const WIN_SCORE = 11;
+const TEAL = '#20b2aa', GREEN = '#32cd32';
+
+let pongActive = false, animFrame = null;
+let scoreL = 0, scoreR = 0;
+let ball, paddleL, paddleR, keys;
+
+function resetBall(dir = 1) {
+  const angle = (Math.random() * 60 - 30) * (Math.PI / 180);
+  const speed = 3.5 + Math.min(scoreL + scoreR, 8) * 0.15;
+  ball = {
+    x: W / 2, y: H / 2,
+    vx: Math.cos(angle) * speed * dir,
+    vy: Math.sin(angle) * speed,
+    r: BALL_R
+  };
+}
+
+function initPong() {
+  scoreL = 0; scoreR = 0;
+  keys = {};
+  paddleL = { x: 20,       y: H/2 - PADDLE_H/2, w: PADDLE_W, h: PADDLE_H };
+  paddleR = { x: W-20-PADDLE_W, y: H/2 - PADDLE_H/2, w: PADDLE_W, h: PADDLE_H };
+  resetBall(1);
+  updateScoreDisplay();
+}
+
+function updateScoreDisplay() {
+  scoreEl.textContent = `${scoreL}   ${scoreR}`;
+}
+
+function drawRect(x, y, w, h, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.roundRect(x, y, w, h, 3);
+  ctx.fill();
+}
+
+function drawBall() {
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowBlur = 14;
+  ctx.shadowColor = GREEN;
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+function drawNet() {
+  ctx.setLineDash([10, 14]);
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(W/2, 0);
+  ctx.lineTo(W/2, H);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function pongLoop() {
+  if (!pongActive) return;
+
+  /* input */
+  if (keys['w'] || keys['W'])          paddleL.y = Math.max(0, paddleL.y - PADDLE_SPEED);
+  if (keys['s'] || keys['S'])          paddleL.y = Math.min(H - PADDLE_H, paddleL.y + PADDLE_SPEED);
+
+  /* AI for right paddle — tracks ball with a small deadzone so it's beatable */
+  const aiCenter = paddleR.y + PADDLE_H / 2;
+  const deadzone = 10;
+  if (ball.y < aiCenter - deadzone)      paddleR.y = Math.max(0,            paddleR.y - AI_SPEED);
+  else if (ball.y > aiCenter + deadzone) paddleR.y = Math.min(H - PADDLE_H, paddleR.y + AI_SPEED);
+
+  /* ball move */
+  ball.x += ball.vx;
+  ball.y += ball.vy;
+
+  /* top/bottom bounce */
+  if (ball.y - ball.r <= 0)  { ball.y = ball.r;      ball.vy *= -1; }
+  if (ball.y + ball.r >= H)  { ball.y = H - ball.r;  ball.vy *= -1; }
+
+  /* paddle collision helper */
+  function hitPaddle(p) {
+    return ball.x - ball.r < p.x + p.w &&
+           ball.x + ball.r > p.x &&
+           ball.y > p.y && ball.y < p.y + p.h;
+  }
+
+  if (hitPaddle(paddleL) && ball.vx < 0) {
+    const rel = ((ball.y - (paddleL.y + PADDLE_H / 2)) / (PADDLE_H / 2));
+    const angle = rel * (Math.PI / 3.5);
+    const speed = Math.hypot(ball.vx, ball.vy) * 1.04;
+    ball.vx =  Math.cos(angle) * speed;
+    ball.vy =  Math.sin(angle) * speed;
+    ball.x = paddleL.x + PADDLE_W + ball.r;
+  }
+  if (hitPaddle(paddleR) && ball.vx > 0) {
+    const rel = ((ball.y - (paddleR.y + PADDLE_H / 2)) / (PADDLE_H / 2));
+    const angle = rel * (Math.PI / 3.5);
+    const speed = Math.hypot(ball.vx, ball.vy) * 1.04;
+    ball.vx = -Math.cos(angle) * speed;
+    ball.vy =  Math.sin(angle) * speed;
+    ball.x = paddleR.x - ball.r;
+  }
+
+  /* scoring */
+  let scored = false;
+  if (ball.x < 0)  { scoreR++; scored = true; resetBall(-1); }
+  if (ball.x > W)  { scoreL++; scored = true; resetBall( 1); }
+  if (scored) updateScoreDisplay();
+
+  /* draw */
+  ctx.clearRect(0, 0, W, H);
+  drawNet();
+  drawRect(paddleL.x, paddleL.y, paddleL.w, paddleL.h, TEAL);
+  drawRect(paddleR.x, paddleR.y, paddleR.w, paddleR.h, GREEN);
+  drawBall();
+
+  /* win check */
+  if (scoreL >= WIN_SCORE || scoreR >= WIN_SCORE) {
+    endPong(scoreL >= WIN_SCORE ? 'YOU WIN!' : 'AI WINS');
+    return;
+  }
+
+  animFrame = requestAnimationFrame(pongLoop);
+}
+
+function endPong(winner) {
+  pongActive = false;
+  cancelAnimationFrame(animFrame);
+
+  winText.textContent = winner;
+  winMsg.classList.add('show');
+
+  let secs = 3;
+  const countdown = setInterval(() => {
+    secs--;
+    if (secs <= 0) {
+      clearInterval(countdown);
+      closePong();
+    } else {
+      winSub.textContent = `closing in ${secs}…`;
+    }
+  }, 1000);
+}
+
+function closePong() {
+  overlay.classList.remove('active');
+  winMsg.classList.remove('show');
+  cancelAnimationFrame(animFrame);
+  document.removeEventListener('keydown', pongKeyDown);
+  document.removeEventListener('keyup',   pongKeyUp);
+}
+
+function pongKeyDown(e) {
+  keys[e.key] = true;
+  /* swallow arrow keys so page doesn't scroll */
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+    e.preventDefault();
+  }
+}
+function pongKeyUp(e) { keys[e.key] = false; }
+
+function launchPong() {
+  if (pongActive) return;
+  initPong();
+  pongActive = true;
+  overlay.classList.add('active');
+  winMsg.classList.remove('show');
+  document.addEventListener('keydown', pongKeyDown);
+  document.addEventListener('keyup',   pongKeyUp);
+  animFrame = requestAnimationFrame(pongLoop);
+}
+</script>
+
+</body>
+</html>

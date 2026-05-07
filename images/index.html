@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Image Browser - usrx215.github.io/images</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: Ubuntu, sans-serif; background: #2c2c2c; color: #eee; margin: 0; padding: 0; }
+  header { background: #4caf50; padding: 1rem; text-align: center; font-size: 1.5rem; font-weight: bold; color: white; }
+  main { padding: 1rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+  .wallpaper { position: relative; overflow: hidden; border-radius: 8px; cursor: pointer; }
+  .wallpaper img { width: 100%; height: auto; display: block; border-radius: 8px; transition: transform 0.3s ease; }
+  .wallpaper:hover img { transform: scale(1.05); }
+  .download-btn, .filename { position: absolute; background: rgba(0,0,0,0.6); color: white; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.9rem; opacity: 0; transition: opacity 0.3s ease; text-decoration: none; }
+  .download-btn { bottom: 8px; right: 8px; }
+  .filename { top: 8px; left: 8px; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .wallpaper:hover .download-btn, .wallpaper:hover .filename { opacity: 1; }
+  /* Viewer */
+  .viewer { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:1000; visibility:hidden; opacity:0; transition: opacity 0.3s ease, visibility 0.3s ease; flex-direction: column; }
+  .viewer.active { visibility: visible; opacity:1; }
+  .viewer img { max-width:80%; max-height:70%; border-radius:8px; }
+  .viewer .top-bar { width: 100%; display:flex; justify-content: space-between; padding: 20px; box-sizing: border-box; }
+  .viewer .close, .viewer .download, .viewer .nav-btn { background: rgba(0,0,0,0.7); color:white; padding:0.5rem 1rem; border-radius:4px; cursor:pointer; text-decoration:none; font-size:1rem; margin:0 5px; }
+  .viewer .bottom-bar { width:100%; display:flex; justify-content:center; margin-top:10px; }
+</style>
+</head>
+<body>
+<header>usrx.space - Image Browser</header>
+<main>
+<div class="grid" id="wallpapers"></div>
+</main>
+
+<div class="viewer" id="viewer">
+  <div class="top-bar">
+    <a class="download" id="viewerDownload" href="#" download="" target="_blank">Download</a>
+    <span class="close" id="viewerClose">Close ✕</span>
+  </div>
+  <img id="viewerImg" src="" alt="">
+  <div id="viewerFilename" style="color:white; margin-top:10px;"></div>
+  <div class="bottom-bar">
+    <button class="nav-btn" id="prevBtn">← Prev</button>
+    <button class="nav-btn" id="nextBtn">Next →</button>
+  </div>
+</div>
+
+<script>
+const wallpapersDiv = document.getElementById("wallpapers");
+const viewer = document.getElementById("viewer");
+const viewerImg = document.getElementById("viewerImg");
+const viewerClose = document.getElementById("viewerClose");
+const viewerDownload = document.getElementById("viewerDownload");
+const viewerFilename = document.getElementById("viewerFilename");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+let currentIndex = 0;
+let currentImages = [];
+
+function forceDownload(url) {
+  const a = document.createElement('a')
+  a.href = url
+  a.download = url.split('/').pop()
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+}
+
+
+async function loadWallpapers() {
+  const apiUrl = `https://api.github.com/repos/usrx215/usrx215.github.io/contents/images`;
+  wallpapersDiv.innerHTML = "Loading...";
+  try {
+    const res = await fetch(apiUrl);
+    if (!res.ok) throw new Error("Failed to load");
+    const data = await res.json();
+    currentImages = data.filter(f => f.name.match(/\.(jpg|jpeg|jfif|png|gif|webp|tiff|tif|heif|avif|bmp|svg)$/i));
+    wallpapersDiv.innerHTML = "";
+
+    currentImages.forEach((file, idx) => {
+      const div = document.createElement("div");
+      div.className = "wallpaper";
+      div.innerHTML = `
+        <img src="${file.download_url}" alt="${file.name}">
+        <a class="download-btn" href="${file.download_url}" download="" target="_blank">⬇</a>
+        <div class="filename">${file.name}</div>
+      `;
+      div.querySelector("img").addEventListener("click", () => openViewer(idx));
+      div.querySelector(".download-btn").addEventListener("click", e => {
+        e.preventDefault();
+        forceDownload(file.download_url, file.name);
+      });
+      wallpapersDiv.appendChild(div);
+    });
+  } catch (err) {
+    wallpapersDiv.innerHTML = "Error loading images.";
+  }
+}
+
+function openViewer(idx) {
+  currentIndex = idx;
+  updateViewer();
+  viewer.classList.add("active");
+}
+
+function closeViewer() {
+  viewer.classList.remove("active");
+  viewerImg.src = "";
+  viewerFilename.textContent = "";
+}
+
+function updateViewer() {
+  const file = currentImages[currentIndex];
+  viewerImg.src = file.download_url;
+  viewerFilename.textContent = file.name;
+  viewerDownload.onclick = e => { e.preventDefault(); forceDownload(file.download_url, file.name); };
+}
+
+function showNext() {
+  if (!currentImages.length) return;
+  currentIndex = (currentIndex + 1) % currentImages.length;
+  updateViewer();
+}
+
+function showPrev() {
+  if (!currentImages.length) return;
+  currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+  updateViewer();
+}
+
+viewerClose.addEventListener("click", closeViewer);
+nextBtn.addEventListener("click", showNext);
+prevBtn.addEventListener("click", showPrev);
+
+document.addEventListener("keydown", e => {
+  if (!viewer.classList.contains("active")) return;
+  if (e.key === "Escape") closeViewer();
+  else if (e.key === "ArrowRight") showNext();
+  else if (e.key === "ArrowLeft") showPrev();
+});
+
+loadWallpapers();
+</script>
+</body>
+</html>
