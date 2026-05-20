@@ -78,7 +78,6 @@ h1 {
   50%     { transform: translateY(-50px); }
 }
 
-/* ── Pong overlay ─────────────────────────────────────────────────── */
 #pong-overlay {
   display: none;
   position: fixed;
@@ -215,7 +214,6 @@ h1 {
   </div>
 </div>
 
-<!-- ── Pong overlay ─────────────────────────────────────────────────── -->
 <div id="pong-overlay">
   <div id="pong-wrapper">
     <div id="pong-label">⬆⬆⬇⬇⬅➡⬅➡ B A — PONG UNLOCKED</div>
@@ -231,9 +229,7 @@ h1 {
   </div>
 </div>
 
-<!-- ── Scripts ──────────────────────────────────────────────────────── -->
 <script>
-/* ---------- Clock ---------- */
 function updateTime() {
   const n = new Date();
   document.getElementById('time').textContent =
@@ -250,7 +246,6 @@ document.querySelector('h1').textContent =
 </script>
 
 <script>
-/* ---------- Hex eye / tongue animation (original) ---------- */
 const leftPupil   = document.getElementById('leftPupil');
 const rightPupil  = document.getElementById('rightPupil');
 const tongueGroup = document.getElementById('tongue-group');
@@ -319,9 +314,7 @@ document.addEventListener('mousemove', e => {
 </script>
 
 <script>
-/* ================================================================
-   KONAMI CODE → PONG
-   ================================================================ */
+
 const KONAMI = [
   'ArrowUp','ArrowUp','ArrowDown','ArrowDown',
   'ArrowLeft','ArrowRight','ArrowLeft','ArrowRight',
@@ -343,7 +336,6 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* ── Pong engine ─────────────────────────────────────────────────── */
 const overlay   = document.getElementById('pong-overlay');
 const canvas    = document.getElementById('pong-canvas');
 const scoreEl   = document.getElementById('pong-score');
@@ -418,25 +410,20 @@ function drawNet() {
 function pongLoop() {
   if (!pongActive) return;
 
-  /* input */
   if (keys['w'] || keys['W'])          paddleL.y = Math.max(0, paddleL.y - PADDLE_SPEED);
   if (keys['s'] || keys['S'])          paddleL.y = Math.min(H - PADDLE_H, paddleL.y + PADDLE_SPEED);
 
-  /* AI for right paddle — tracks ball with a small deadzone so it's beatable */
   const aiCenter = paddleR.y + PADDLE_H / 2;
   const deadzone = 10;
   if (ball.y < aiCenter - deadzone)      paddleR.y = Math.max(0,            paddleR.y - AI_SPEED);
   else if (ball.y > aiCenter + deadzone) paddleR.y = Math.min(H - PADDLE_H, paddleR.y + AI_SPEED);
 
-  /* ball move */
   ball.x += ball.vx;
   ball.y += ball.vy;
 
-  /* top/bottom bounce */
   if (ball.y - ball.r <= 0)  { ball.y = ball.r;      ball.vy *= -1; }
   if (ball.y + ball.r >= H)  { ball.y = H - ball.r;  ball.vy *= -1; }
 
-  /* paddle collision helper */
   function hitPaddle(p) {
     return ball.x - ball.r < p.x + p.w &&
            ball.x + ball.r > p.x &&
@@ -460,20 +447,17 @@ function pongLoop() {
     ball.x = paddleR.x - ball.r;
   }
 
-  /* scoring */
   let scored = false;
   if (ball.x < 0)  { scoreR++; scored = true; resetBall(-1); }
   if (ball.x > W)  { scoreL++; scored = true; resetBall( 1); }
   if (scored) updateScoreDisplay();
-
-  /* draw */
+ 
   ctx.clearRect(0, 0, W, H);
   drawNet();
   drawRect(paddleL.x, paddleL.y, paddleL.w, paddleL.h, TEAL);
   drawRect(paddleR.x, paddleR.y, paddleR.w, paddleR.h, GREEN);
   drawBall();
 
-  /* win check */
   if (scoreL >= WIN_SCORE || scoreR >= WIN_SCORE) {
     endPong(scoreL >= WIN_SCORE ? 'YOU WIN!' : 'AI WINS');
     return;
@@ -511,7 +495,6 @@ function closePong() {
 
 function pongKeyDown(e) {
   keys[e.key] = true;
-  /* swallow arrow keys so page doesn't scroll */
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
     e.preventDefault();
   }
