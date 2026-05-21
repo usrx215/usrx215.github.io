@@ -9,7 +9,6 @@
 <link rel="icon" type="image/png" href="derpagon.svg">
 <meta name="description" content="usrx215's site, usrx.space">
 <meta name="robots" content="index,follow">
-<link rel="canonical" href="https://usrx.space/">
 <meta property="og:title" content="usrx.space" />
 <meta property="og:description" content="usrx215's site, usrx.space" />
 <meta property="og:image" content="derpagon.svg" />
@@ -42,18 +41,17 @@ a { text-decoration: none; color: black; }
 a:hover { color: black; }
 i { color: black; }
 
-#menu { color: white; }
-#menu button {
-  background: none; border: none;
-  font-size: 1.2em; cursor: pointer; font-weight: bold;
+#time {
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 8px 16px;
+  font-weight: bold;
+  color: white;
+  background: rgba(0,0,0,0.15);
+  border-bottom-left-radius: 8px;
+  z-index: 100;
 }
-.dropdown {
-  display: none; position: absolute;
-  background: white; border: 1px solid #ccc;
-  padding: 10px; border-radius: 8px;
-}
-#menu:hover .dropdown { display: block; }
-#time { margin-left: auto; font-weight: bold; }
 
 .main {
   height: calc(100vh - 50px);
@@ -76,6 +74,36 @@ h1 {
 @keyframes bounce {
   0%,100% { transform: translateY(0); }
   50%     { transform: translateY(-50px); }
+}
+
+#footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 -4px 6px rgba(0,0,0,0.1);
+  height: 50px;
+  z-index: 100;
+}
+.links {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-size: 0.95em;
+  font-weight: bold;
+}
+.links a {
+  color: white;
+  padding: 0 12px;
+}
+.links a:hover { color: white; opacity: 0.8; }
+.links .sep {
+  color: rgba(255,255,255,0.5);
+  user-select: none;
 }
 
 #pong-overlay {
@@ -165,22 +193,7 @@ h1 {
 </head>
 
 <body>
-<header>
-  <div id="menu">
-    <button><i class="fa-solid fa-link"></i><i class="fa-solid fa-bars"></i></button>
-    <div class="dropdown">
-      <a href="https://arcadia.usrx.space" target="_blank"><i class="fa-solid fa-gamepad"></i> Arcadia</a><br>
-      <a href="https://github.com/usrx215" target="_blank"><i class="fa-brands fa-square-github"></i> usrx215's GitHub</a><br>
-      <a href="https://steamcommunity.com/id/usrx215/" target="_blank"><i class="fa-brands fa-steam"></i> usrx215's Steam</a><br>
-      <a href="https://discord.com/users/821127583017992215" target="_blank"><i class="fa-brands fa-discord"></i> usrx215's Discord</a><br>
-      <a href="https://youtube.com/@usrx215" target="_blank"><i class="fa-brands fa-youtube"></i> usrx215's YouTube</a><br>
-      <a href="https://twitch.tv/usrx215" target="_blank"><i class="fa-brands fa-twitch"></i> usrx215's Twitch</a><br>
-      <a href="numtools.html" target="_blank"><i class="fa-solid fa-hashtag"></i> NumTools</a><br>
-      <a href="images/"><i class="fa-solid fa-images"></i> Image Gallery</a>
-    </div>
-  </div>
-  <div id="time"></div>
-</header>
+<div id="time"></div>
 
 <div class="main">
   <h1>Welcome to usrx.space!</h1>
@@ -211,6 +224,32 @@ h1 {
               fill="#ff5c8a" stroke="#000" stroke-width="2"/>
       </g>
     </svg>
+  </div>
+</div>
+
+<div id="footer">
+  <div class="links">
+    <a href="https://arcadia.usrx.space" target="_blank"><i class="fa-solid fa-gamepad"></i> Arcadia</a>
+    <span class="sep">|</span>
+    <a href="https://github.com/usrx215" target="_blank"><i class="fa-brands fa-square-github"></i> GitHub</a>
+    <span class="sep">|</span>
+    <a href="https://steamcommunity.com/id/usrx215/" target="_blank"><i class="fa-brands fa-steam"></i> Steam</a>
+    <span class="sep">|</span>
+    <a href="https://discord.com/users/821127583017992215" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
+    <span class="sep">|</span>
+    <a href="https://youtube.com/@usrx215" target="_blank"><i class="fa-brands fa-youtube"></i> YouTube</a>
+    <span class="sep">|</span>
+    <a href="https://twitch.tv/usrx215" target="_blank"><i class="fa-brands fa-twitch"></i> Twitch</a>
+    <span class="sep">|</span>
+    <a href="https://bsky.app/profile/usrx.space" target="_blank"><i class="fa-brands fa-bluesky"></i> Bluesky</a>
+    <span class="sep">|</span>
+    <a href="https://usrx215.bandcamp.com" target="_blank"><i class="fa-brands fa-bandcamp"></i> Bandcamp</a>
+    <span class="sep">|</span>
+    <a href="mailto:usrx215@icloud.com" target="_blank"><i class="fa-solid fa-envelope"></i> Email</a>
+    <span class="sep">|</span>
+    <a href="numtools.html" target="_blank"><i class="fa-solid fa-hashtag"></i> NumTools</a>
+    <span class="sep">|</span>
+    <a href="images/"><i class="fa-solid fa-images"></i> Image Gallery</a>
   </div>
 </div>
 
